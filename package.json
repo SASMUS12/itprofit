@@ -10,5 +10,8 @@
   "scripts": {
     "compile-scss": "node-sass src/styles/main.scss src/styles/main.css",
     "server": "node server/index.js"
+  },
+  "devDependencies": {
+    "webpack-cli": "^5.1.4"
   }
 }

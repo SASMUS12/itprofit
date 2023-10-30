@@ -1,77 +1,56 @@
-import { validateForm } from '/src/modules/validation.js';
-
-function sendFormData(formData) {
-    return fetch('/api/registration', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-    })
-        .then((response) => response.json())
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-}
+import { validateForm } from '../src/modules/validation.js';
+import { sendFormData } from '../src/modules/ajax.js';
+import { toggleModal } from '../src/modules/common.js';
 
 const phoneInput = document.querySelector('#phone');
 const phoneMask = new IMask(phoneInput, {
-    mask: '+{375} (00) 000-00-00'
+    mask: '+{375} (00) 000-00-00',
 });
 
-document.querySelector('#contact-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-
-    const errorMessages = document.querySelectorAll('.error');
-    errorMessages.forEach((errorElement) => errorElement.remove());
-    const inputFields = document.querySelectorAll('input');
-    inputFields.forEach((inputField) => inputField.classList.remove('error'));
-
-    sendFormData({
-        name: formData.get('name'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        message: formData.get('message'),
+document.addEventListener('DOMContentLoaded', () => {
+    const phoneInput = document.querySelector('#phone');
+    const phoneMask = new IMask(phoneInput, {
+        mask: '+{375} (00) 000-00-00'
     });
 });
 
 const submitButton = document.querySelector('#submit');
-const closeModalButton = document.querySelector('#close-modal');
 
-function toggleModal() {
-    const modal = document.querySelector('.modal');
-    modal.classList.toggle('active');
-    document.body.style.overflow = document.body.style.overflow === 'hidden' ? 'auto' : 'hidden';
+const contactForm = document.querySelector('#contact-form');
+const errorMessages = document.querySelector('#error_messages');
 
-    if (modal.classList.contains('active')) {
-        document.addEventListener('keydown', closeModalOnEscape);
-        document.addEventListener('click', closeModalOnClickOutside);
-    } else {
-        document.removeEventListener('keydown', closeModalOnEscape);
-        document.removeEventListener('click', closeModalOnClickOutside);
-    }
-}
+contactForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(contactForm);
 
-function closeModalOnEscape(event) {
-    if (event.key === 'Escape' && document.querySelector('.modal.active')) {
-        toggleModal();
-    }
-}
-
-function closeModalOnClickOutside(event) {
-    if (event.target === document.querySelector('.modal.active')) {
-        toggleModal();
-    }
-}
-
-submitButton.addEventListener('click', toggleModal);
-closeModalButton.addEventListener('click', toggleModal);
-
-
-document.querySelector('#submit').addEventListener('click', function (e) {
     if (!validateForm()) {
-        e.preventDefault();
-        toggleModal();
+        return;
+    }
+
+    try {
+        const response = await sendFormData({
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            message: formData.get('message'),
+        });
+
+        if (response.status === 'success') {
+            toggleModal();
+            errorMessages.innerHTML = '';
+        } else if (response.status === 'error') {
+            errorMessages.innerHTML = '';
+            for (const fieldName in response.fields) {
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'error';
+                errorMessage.textContent = response.fields[fieldName];
+                errorMessages.appendChild(errorMessage);
+            }
+        }
+    } catch (error) {
+        console.log('Ошибка:', error);
     }
 });
+
+submitButton.addEventListener('click', toggleModal);
+document.querySelector('#close-modal').addEventListener('click', toggleModal);
