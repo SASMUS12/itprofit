@@ -1,3 +1,4 @@
+import './styles/index.scss';
 import { validateForm } from '../src/modules/validation.js';
 import { sendFormData } from '../src/modules/ajax.js';
 import { toggleModal } from '../src/modules/common.js';
