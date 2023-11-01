@@ -12,11 +12,11 @@ module.exports = {
     },
     mode: 'development',
     devServer: {
-        static: path.resolve(__dirname, './dist'), // путь, куда "смотрит" режим разработчика
-        compress: true, // это ускорит загрузку в режиме разработки
-        port: 8080, // порт, чтобы открывать сайт по адресу localhost:8080, но можно поменять порт
+        static: path.resolve(__dirname, './dist'),
+        compress: true,
+        port: 8080,
 
-        open: true // сайт будет открываться сам при запуске npm run dev
+        open: true
     },
     module: {
         rules: [
@@ -30,9 +30,8 @@ module.exports = {
                 type: 'asset/resource'
             },
             {
-                test: /\.css$/,
+                test: /\.sass$/,
                 use: [
-                    MiniCssExtractPlugin.loader,
                     'style-loader',
                     'css-loader',
                     'sass-loader'
@@ -42,11 +41,11 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html' // путь к файлу index.html
+            template: './src/index.html'
         }),
         new CleanWebpackPlugin(),
         new MiniCssExtractPlugin({
             filename: 'main.css'
-          }),
+        }),
     ]
 };

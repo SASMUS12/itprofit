@@ -1,7 +1,8 @@
-import './styles/index.scss';
+import './styles/main.sass';
 import { validateForm } from '../src/modules/validation.js';
 import { sendFormData } from '../src/modules/ajax.js';
 import { toggleModal } from '../src/modules/common.js';
+import IMask from 'imask';
 
 const phoneInput = document.querySelector('#phone');
 const phoneMask = new IMask(phoneInput, {

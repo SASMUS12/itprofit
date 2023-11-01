@@ -13,14 +13,14 @@ export async function sendFormData(formData) {
         }
 
         const data = await response.json();
-
-        if (data && data.status === 'success') {
-            console.log(data)
-            const message = data.message;
-            resetFormFields();
-            displaySuccessMessage(data.message);
-        } else if (data && data.status === 'error') {
-            displayErrorMessages(data.fields);
+        console.log(data);
+        if (data.status === 'success' || data.status === 'error') {
+            console.log(data.message);
+            displayMessage(data.message, data.fields, data.status === 'success');
+        } else if (data.status === 'error') {
+            console.log('Ошибка при отправке формы:');
+            console.log(data.fields);
+            displayMessage(data.message, data.fields, data.status === 'error');
         }
     } catch (error) {
         console.log('Ошибка:', error);
@@ -32,31 +32,40 @@ function resetFormFields() {
     form.reset();
 }
 
-function displaySuccessMessage(message) {
+function displayMessage(message, fields, isSuccess) {
     const modal = document.querySelector('.modal');
     modal.style.display = 'flex';
 
-    console.log('message:', message);
-    modal.querySelector('#items').textContent = 'Спасибо за отправку формы';
-    modal.querySelector('#item').textContent = message;
+    const items = modal.querySelector('#items');
+    const item = modal.querySelector('#item');
+
+    isSuccess ? (items.textContent = 'Спасибо за отправку формы') : (items.textContent = 'Ошибка при отправке формы');
+    // if (isSuccess) {
+    //     items.textContent = 'Ошибка при отправке формы';
+    // } else {
+    //     items.textContent = 'Спасибо за отправку формы';
+    // }
+
+    item.textContent = message;
+
+    if (!isSuccess && fields) {
+        for (const fieldName in fields) {
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'error';
+            errorMessage.textContent = fields[fieldName];
+            modal.appendChild(errorMessage);
+        }
+    }
 
     modal.classList.add('active');
 
-    const closeModalButton = modal.querySelector('#close-modal');
-    closeModalButton.addEventListener('click', () => {
-        modal.style.display = 'none';
-        modal.classList.remove('active');
-        resetFormFields();
-    });
-}
-
-function displayErrorMessages(fields) {
-    const errorMessages = document.querySelector('#error_messages');
-    errorMessages.innerHTML = '';
-    for (const fieldName in fields) {
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'error';
-        errorMessage.textContent = fields[fieldName];
-        errorMessages.appendChild(errorMessage);
+    if (isSuccess) {
+        const closeModalButton = modal.querySelector('#close-modal');
+        closeModalButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+            modal.classList.remove('active');
+            resetFormFields();
+        });
     }
 }
+

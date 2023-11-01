@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Александр Васько">
-    <link rel="stylesheet" href="styles/main.css">
     <title>Форма обратной связи</title>
 </head>
 
@@ -14,19 +13,22 @@
         <h1>Форма обратной связи</h1>
         <div class="form-group">
             <label for="name">Имя:</label>
-            <input type="text" id="name" autocomplete="name" name="name" placeholder="Введите имя" required>
+            <input class="name" type="text" id="name" autocomplete="name" name="name" placeholder="Введите имя"
+                required>
         </div>
         <div class="form-group">
             <label for="email">E-mail:</label>
-            <input type="email" id="email" autocomplete="email" name="email" placeholder="Введите почту" required>
+            <input class="email" type="email" id="email" autocomplete="email" name="email" placeholder="Введите почту"
+                required>
         </div>
         <div class="form-group">
             <label for="phone">Телефон:</label>
-            <input type="text" id="phone" name="phone" placeholder="Введите номер телефона" required>
+            <input class="phone" type="text" id="phone" name="phone" placeholder="Введите номер телефона" required>
         </div>
         <div class="form-group">
             <label for="message">Сообщение:</label>
-            <textarea id="message" name="message" rows="4" placeholder="Введите сообщение" required></textarea>
+            <textarea class="message" id="message" name="message" rows="4" placeholder="Введите сообщение"
+                required></textarea>
         </div>
         <div id="error_messages"></div>
         <button id="submit" type="submit">Отправить</button>
@@ -38,8 +40,6 @@
             <button id="close-modal">Закрыть</button>
         </div>
     </div>
-    <script type="module" src="https://unpkg.com/imask"></script>
-    <script type="module" src="/src/index.js"></script>
 </body>
 
 </html>
