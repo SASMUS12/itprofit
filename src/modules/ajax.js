@@ -1,4 +1,6 @@
 export async function sendFormData(formData) {
+    const modal = document.querySelector('.modal');
+
     try {
         const response = await fetch('http://localhost:9090/api/registration', {
             method: 'POST',
@@ -8,22 +10,21 @@ export async function sendFormData(formData) {
             body: JSON.stringify(formData),
         });
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        console.log(data);
-        if (data.status === 'success' || data.status === 'error') {
-            console.log(data.message);
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
             displayMessage(data.message, data.fields, data.status === 'success');
-        } else if (data.status === 'error') {
-            console.log('Ошибка при отправке формы:');
-            console.log(data.fields);
-            displayMessage(data.message, data.fields, data.status === 'error');
+        } else {
+            throw new Error('Server response was not OK');
         }
     } catch (error) {
         console.log('Ошибка:', error);
+        modal.style.display = 'flex';
+        const items = modal.querySelector('#items');
+        items.textContent = 'Ошибка при отправке формы';
+        const item = modal.querySelector('#item');
+        item.textContent = 'Произошла ошибка при обращении к серверу';
+        modal.classList.add('active');
     }
 }
 
@@ -38,22 +39,23 @@ function displayMessage(message, fields, isSuccess) {
 
     const items = modal.querySelector('#items');
     const item = modal.querySelector('#item');
+    const errors = modal.querySelector('#errors');
+    const error = modal.querySelector('#error');
 
-    isSuccess ? (items.textContent = 'Спасибо за отправку формы') : (items.textContent = 'Ошибка при отправке формы');
-    // if (isSuccess) {
-    //     items.textContent = 'Ошибка при отправке формы';
-    // } else {
-    //     items.textContent = 'Спасибо за отправку формы';
-    // }
-
-    item.textContent = message;
+    if (isSuccess) {
+        items.textContent = 'Спасибо за отправку формы';
+        item.textContent = message;
+    } else {
+        errors.textContent = 'Ошибка при отправке формы';
+        error.textContent = message;
+    }
 
     if (!isSuccess && fields) {
         for (const fieldName in fields) {
             const errorMessage = document.createElement('div');
             errorMessage.className = 'error';
             errorMessage.textContent = fields[fieldName];
-            modal.appendChild(errorMessage);
+            errors.appendChild(errorMessage);
         }
     }
 
@@ -68,4 +70,3 @@ function displayMessage(message, fields, isSuccess) {
         });
     }
 }
-
